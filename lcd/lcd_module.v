@@ -1,17 +1,15 @@
-// 
-
 `timescale 1ns / 1ps
 
 module lcd_module (
-  input  wire         clk_33M      , // 33M clock
-  input  wire         rst_n        ,
-  output wire         lcd_dclk     ,
-  output wire         lcd_hsync    ,
-  output wire         lcd_vsync    ,
-  output wire         lcd_de       ,
-  output wire         lcd_rst_n    , // -- Active low
-  output wire [10: 0] lcd_hsync_cnt,
-  output wire [9 : 0] lcd_vsync_cnt
+  input  wire         clk_i        , // -- Input clock: 33MHz
+  input  wire         rst_n        , // -- Reset signal
+  output wire         lcd_dclk     , // -- Reversed input clock
+  output wire         lcd_hsync    , // -- Herizontal sync signal
+  output wire         lcd_vsync    , // -- Vertical sync signal
+  output wire         lcd_de       , // -- De signal
+  output wire         lcd_rst_n    , // -- Active low: could be used to adjust brightness
+  output wire [10: 0] lcd_hsync_cnt, // -- Hsync signal counter
+  output wire [9 : 0] lcd_vsync_cnt  // -- Vsync signal counter
 );
 
   // -- Herizontal Parameters
@@ -43,12 +41,12 @@ module lcd_module (
   reg hsync_de;
   reg vsync_de;
   
-  assign lcd_dclk  = ~ clk_33M;
+  assign lcd_dclk  = ~ clk_i;
   assign lcd_hsync = hsync_r;
   assign lcd_vsync = vsync_r;
   assign lcd_de    = hsync_de && vsync_de;
 
-  always @ (posedge clk_33M) begin
+  always @ (posedge clk_i) begin
     if (!rst_n) 
       hsync_cnt <= 1'b1;
     else if (hsync_cnt == LinePeriod)
@@ -57,7 +55,7 @@ module lcd_module (
       hsync_cnt <= hsync_cnt + 1;
   end
 
-  always @ (posedge clk_33M) begin
+  always @ (posedge clk_i) begin
     if (!rst_n)
       hsync_r <= 1'b1;
     else if (hsync_cnt == 1)
@@ -77,7 +75,7 @@ module lcd_module (
       hsync_de <= hsync_de;
   end
 
-  always @ (posedge clk_33M) begin
+  always @ (posedge clk_i) begin
     if (!rst_n)
       vsync_cnt <= 1'b1;
     else if (vsync_cnt == FramePeriod)
@@ -88,7 +86,7 @@ module lcd_module (
       vsync_cnt <= vsync_cnt;
   end
 
-  always @ (posedge clk_33M) begin
+  always @ (posedge clk_i) begin
     if (!rst_n)
       vsync_r <= 1'b1;
     else if (vsync_cnt == 1)
