@@ -4,6 +4,6 @@
 - [x] VGA (640x480) driver
 - [x] SPI transmitter
 - [x] UART
-- [x] LCD driver
+- [x] LCD (800x480) driver
 - [x] AD converter
 - [x] Huffman Encoding core
