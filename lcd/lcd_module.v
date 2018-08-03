@@ -15,18 +15,18 @@ module lcd_module (
   // -- Herizontal Parameters
   parameter LinePeriod   = 1056;
   parameter H_SyncPulse  =  128;
+  parameter H_FrontPorch =   40;
   parameter H_BackPorch  =   88;
   parameter H_ActivePix  =  800;
-  parameter H_FrontPorch =   40;
   parameter Hde_start    =  216;
   parameter Hde_end      = 1016;
   
   // -- Vertical Parameters
   parameter FramePeriod  = 505;
   parameter V_SyncPulse  =   3;
+  parameter V_FrontPorch =   1;
   parameter V_BackPorch  =  21;
   parameter V_ActivePix  = 480;
-  parameter V_FrontPorch =   1;
   parameter Vde_start    =  24;
   parameter Vde_end      = 504;
   
@@ -45,6 +45,7 @@ module lcd_module (
   assign lcd_hsync = hsync_r;
   assign lcd_vsync = vsync_r;
   assign lcd_de    = hsync_de && vsync_de;
+  assign lcd_rst   = 1'b1;
 
   always @ (posedge clk_i) begin
     if (!rst_n) 
@@ -105,8 +106,6 @@ module lcd_module (
     else
       vsync_de <= vsync_de;
   end
-
-  assign lcd_rst = 1'b1;
 
   assign lcd_hsync_cnt = (Hde_start) ? (hsync_cnt - 217) : 11'd0;
   assign lcd_vsync_cnt = (Vde_start) ? (vsync_cnt - 25)  : 10'd0;
